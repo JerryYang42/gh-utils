@@ -21,3 +21,4 @@ unlink_if_ours() {
 }
 
 unlink_if_ours scripts/git-clone-at-tag.sh git-clone-at-tag
+unlink_if_ours scripts/git-clone-this-at-tag.sh git-clone-this-at-tag
