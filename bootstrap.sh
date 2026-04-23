@@ -31,3 +31,4 @@ link() {
 }
 
 link scripts/git-clone-at-tag.sh git-clone-at-tag
+link scripts/git-clone-this-at-tag.sh git-clone-this-at-tag
