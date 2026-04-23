@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $(basename "$0") [-v|--verbose] <repo-url> <tag|branch|sha>" >&2
+  echo "Usage: $(basename "$0") [-v|--verbose] <repo-url> <tag>" >&2
   echo "Example: $(basename "$0") https://github.com/cli/cli v2.0.0" >&2
   exit 1
 }
@@ -54,15 +54,24 @@ else
   git -C "$TARGET_DIR" fetch --tags --force --quiet origin 2>/dev/null
 fi
 
-# Checkout the requested ref
-info "checking out $REF ..."
-if ! git -C "$TARGET_DIR" checkout "$REF" 2>/dev/null; then
-  echo "error: ref '$REF' not found in $REPO_URL" >&2
+# Verify the ref is a known tag
+if ! git -C "$TARGET_DIR" tag --list "$REF" | grep -qx "$REF"; then
+  echo "error: '$REF' is not a tag in $REPO_URL" >&2
   available="$(git -C "$TARGET_DIR" tag --sort=-version:refname | head -3)"
   if [[ -n "$available" ]]; then
     echo "available tags (latest 3):" >&2
     echo "$available" | sed 's/^/  /' >&2
   fi
+  echo "" >&2
+  echo "to list all tags, run:" >&2
+  echo "  git -C \"$TARGET_DIR\" tag --sort=-version:refname" >&2
+  exit 1
+fi
+
+# Checkout the tag
+info "checking out $REF ..."
+if ! git -C "$TARGET_DIR" checkout "$REF" 2>/dev/null; then
+  echo "error: failed to checkout tag '$REF'" >&2
   exit 1
 fi
 
