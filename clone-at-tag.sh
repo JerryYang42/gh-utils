@@ -58,6 +58,11 @@ fi
 info "checking out $REF ..."
 if ! git -C "$TARGET_DIR" checkout "$REF" 2>/dev/null; then
   echo "error: ref '$REF' not found in $REPO_URL" >&2
+  available="$(git -C "$TARGET_DIR" tag --sort=-version:refname | head -3)"
+  if [[ -n "$available" ]]; then
+    echo "available tags (latest 3):" >&2
+    echo "$available" | sed 's/^/  /' >&2
+  fi
   exit 1
 fi
 
